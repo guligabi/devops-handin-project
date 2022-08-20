@@ -49,20 +49,21 @@ jobs:
   Dockerhub:
     runs-on: ubuntu-latest
     needs: [Build, Test]
-    - name: Login to DockerHub
+    steps:
+    - name: dockerlogin
       uses: docker/login-action@v1
       with:
         username: ${{ env.docker_user }}
         password: ${{ env.docker_pw }}
 
-      - name: build frontend
+    - name: build frontend
       	uses: docker/build-push-action@v2
       	with:
           context: ./frontend
           push: true
           tags: guligabi/simple-cookie-frontend:latest
 
-      - name: build backend
+    - name: build backend
       	uses: docker/build-push-action@v2
       	with:
           context: ./backend
