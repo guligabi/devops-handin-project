@@ -34,6 +34,8 @@ jobs:
       - Test
     runs-on: ubuntu-latest
     steps: 
+      - name: clone
+        uses: actions/checkout@v3
       - 
         name: dockerlogin
         uses: docker/login-action@v1
