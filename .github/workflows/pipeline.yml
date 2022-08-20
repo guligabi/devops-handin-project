@@ -18,8 +18,14 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Build
-      run: go build -v ./...
+    - name: Build-backend
+      run: cd backend && go build
 
-    - name: Test
-      run: go test -v ./...
+    - name: Test-backend
+      run: cd backend && go test
+
+    - name: Build-frontend
+      run: cd frontend && go build
+
+    - name: Test-frontend
+      run: cd frontend && go test
