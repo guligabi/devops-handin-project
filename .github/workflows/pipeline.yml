@@ -6,66 +6,67 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  docker_user: ${{ secrets.DOCKER_USERNAME }}
-  docker_pw: ${{ secrets.DOCKER_PASSWORD }}
-  REPO_NAME: ${{ secrets.REPO_NAME }}
-  REPO_NAME_BACKEND: ${{ secrets.REPO_NAME_BACKEND }} 
-
-jobs:
-
-  Build:
+env: 
+  REPO_NAME: "${{ secrets.REPO_NAME }}"
+  REPO_NAME_BACKEND: "${{ secrets.REPO_NAME_BACKEND }}"
+  docker_pw: "${{ secrets.DOCKER_PASSWORD }}"
+  docker_user: "${{ secrets.DOCKER_USERNAME }}"
+jobs: 
+  Build: 
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.18
-
-    - name: Build-backend
-      run: cd backend && go build
-
-    - name: Build-frontend
-      run: cd frontend && go build
-
-  Test:
+    steps: 
+      - 
+        uses: actions/checkout@v3
+      - 
+        name: "Set up Go"
+        uses: actions/setup-go@v3
+        with: 
+          go-version: 1.18
+      - 
+        name: Build-backend
+        run: "cd backend && go build"
+      - 
+        name: Build-frontend
+        run: "cd frontend && go build"
+  Dockerhub: 
+    needs: 
+      - Build
+      - Test
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.18
-
-    - name: Test-backend
-      run: cd backend && go test
-
-    - name: Test-frontend
-      run: cd frontend && go test
-
-  Dockerhub:
-    runs-on: ubuntu-latest
-    needs: [Build, Test]
-    steps:
-    - name: dockerlogin
-      uses: docker/login-action@v1
-      with:
-        username: ${{ env.docker_user }}
-        password: ${{ env.docker_pw }}
-
-    - name: build-frontend
-      	uses: docker/build-push-action@v2
-      	with:
+    steps: 
+      - 
+        name: dockerlogin
+        uses: docker/login-action@v1
+        with: 
+          password: "${{ env.docker_pw }}"
+          username: "${{ env.docker_user }}"
+      - 
+        name: build-frontend
+        uses: docker/build-push-action@v2
+        with: 
           context: ./frontend
           push: true
-          tags: guligabi/simple-cookie-frontend:latest
-
-    - name: build-backend
-      	uses: docker/build-push-action@v2
-      	with:
+          tags: "guligabi/simple-cookie-frontend:latest"
+      - 
+        name: build-backend
+        uses: docker/build-push-action@v2
+        with: 
           context: ./backend
           push: true
-          tags: guligabi/simple-cookie-backend:latest
+          tags: "guligabi/simple-cookie-backend:latest"
+  Test: 
+    runs-on: ubuntu-latest
+    steps: 
+      - 
+        uses: actions/checkout@v3
+      - 
+        name: "Set up Go"
+        uses: actions/setup-go@v3
+        with: 
+          go-version: 1.18
+      - 
+        name: Test-backend
+        run: "cd backend && go test"
+      - 
+        name: Test-frontend
+        run: "cd frontend && go test"
