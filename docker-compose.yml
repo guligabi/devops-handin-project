@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  redis:
+    image: redis:7.0
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning
+    ports:
+      - 6379:6379
+    volumes:
+      - ../data/redis:/data
+    restart: always
+  backend:
+    image: guligabi/simple-fortune-cookie-backend:latest
+    ports:
+        - 9000:9000
+    links:
+        - redis
+    depends_on:
+        - redis
+    environment:
+      REDIS_DNS: redis
+  frontend:
+    image: guligabi/simple-fortune-cookie-frontend:latest
+    ports:
+        - "8080:8080"
+    depends_on:
+        - backend
+    environment:
+        - BACKEND_DNS=backend
+    depends_on: 
+      - backend
